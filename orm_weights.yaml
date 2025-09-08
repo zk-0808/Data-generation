@@ -1,0 +1,54 @@
+global:
+  generated.total_number: 10000  # 保持总样本量
+
+## 基础对象层级：提升字段、关系、实体更新的权重
+base_object_hierarchy:
+  weight: 0
+  domain:
+    weight: 20  # 降低域权重（示例中未重点涉及）
+  entity:
+    weight: 80  # 提升实体权重（示例核心为实体操作）
+    # 提升“更新实体”（如修改表名、逻辑删除）的权重
+    tableName:
+      weight: 15.71  # 原10.71，因示例中订单表改名是重点
+      create:
+        weight: 53
+      read:
+        weight: 47
+      update:
+        weight: 50  # 原0，提升更新权重
+    useLogicalDelete:
+      weight: 12.52  # 原9.52，因示例中启用逻辑删除是重点
+    # 提升“字段”（如添加客户等级）的权重
+    column:
+      weight: 12.52  # 原9.52
+      stdSqlType:
+        weight: 10.51  # 原8.51，强调字段类型
+    # 提升“关系删除”的权重
+    relation:
+      weight: 12.52  # 原9.52
+      toMany:
+        delete:
+          weight: 40  # 原20，因示例中删除一对多关系是重点
+
+## 语义矩阵：提升复合意图权重（示例含多操作）
+semantic_matrix:
+  weight: 60
+  intent_strategy:
+    composite:
+      weight: 40  # 原30，示例中指令包含“添加+删除”复合操作
+
+## 表达矩阵：提升同义词和句式变换权重（适配数据增广）
+expression_matrix:
+  lexical_layer:
+    synonym_replacement:
+      weight: 40  # 原35，示例中增广大量使用同义词
+  syntactic_layer:
+    active_passive:
+      weight: 40  # 原35，示例中句式变换频繁
+
+## 鲁棒性矩阵：提升类型错误对抗样本权重
+robustness_matrix:
+  adversarial_layer:
+    type_mismatch:
+      weight: 30  # 原20，示例中对抗样本重点测试类型错误

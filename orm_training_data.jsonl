@@ -1,0 +1,11 @@
+{"instruction": "修改客户表，增加客户等级，类型为数字，并删除与订单表的关联。", "intent": [{"intentType": "ADD_COLUMN", "targetConceptName": "客户", "props": {"name": "客户等级", "stdSqlType": "STRING"}}, {"intentType": "DELETE_RELATION", "targetConceptName": "客户", "props": {"from": "客户", "to": "订单"}}], "label": "正常样本"}
+{"instruction": "extra0 extra6", "intent": [{"intentType": "ADD_COLUMN", "targetConceptName": "客户", "props": {"name": "客户等级", "stdSqlType": "STRING"}}, {"intentType": "DELETE_RELATION", "targetConceptName": "客户", "props": {"from": "客户", "to": "订单"}}], "label": "正常样本"}
+{"instruction": "extra0 extra1", "intent": [{"intentType": "ADD_COLUMN", "targetConceptName": "客户", "props": {"name": "客户等级", "stdSqlType": "STRING"}}, {"intentType": "DELETE_RELATION", "targetConceptName": "客户", "props": {"from": "客户", "to": "订单"}}], "label": "正常样本"}
+{"instruction": "extra0", "intent": [{"intentType": "ADD_COLUMN", "targetConceptName": "客户", "props": {"name": "客户等级", "stdSqlType": "STRING"}}, {"intentType": "DELETE_RELATION", "targetConceptName": "客户", "props": {"from": "客户", "to": "订单"}}], "label": "正常样本"}
+{"instruction": "给客户表添加字符串类型的客户等级字段", "intent": [{"intentType": "ADD_COLUMN", "targetConceptName": "客户", "props": {"name": "客户等级", "stdSqlType": "STRING"}}], "label": "对抗样本-类型错误"}
+{"instruction": "给客户表添加与订单表的关联关系", "intent": [{"intentType": "ADD_RELATION", "targetConceptName": "客户", "props": {"from": "客户", "to": "订单"}}], "label": "对抗样本-关系操作错误"}
+{"instruction": "给客户表加个等级字段", "intent": [], "label": "负样本-字段名模糊"}
+{"instruction": "给用户表添加客户等级字段", "intent": [], "label": "负样本-实体名错误"}
+{"instruction": "启用订单表逻辑删除，更新表名为Customer_O2M_Order。", "intent": [{"intentType": "UPDATE_ENTITY", "targetConceptName": "订单", "props": {"useLogicalDelete": true}}], "label": "正常样本"}
+{"instruction": "extra0 extra1 extra2 extra3 extra4 extra5 extra6 extra3 extra3 extra9 extra6 extra9 extra6 extra3 extra3 extra3 extra3", "intent": [{"intentType": "UPDATE_ENTITY", "targetConceptName": "订单", "props": {"useLogicalDelete": true}}], "label": "正常样本"}
+{"instruction": "extra0 extra1 extra2 extra3 extra4 extra5 extra6 extra3 extra9 extra9 extra9 extra9 extra9 extra9 extra6 extra6 extra9 extra9 extra9 extra9 extra9 extra6 extra6 extra6 extra6 extra6 extra6 extra6 extra6", "intent": [{"intentType": "UPDATE_ENTITY", "targetConceptName": "订单", "props": {"useLogicalDelete": true}}], "label": "正常样本"}

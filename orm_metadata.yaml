@@ -1,0 +1,646 @@
+# ORM 配置元数据 - 包含名称、描述、策略和示例信息
+
+base_object_hierarchy:
+  name: "对象层级"
+  description: "1.子权重在局部 100 内归一化 2.crud false 表示不池化"
+  weight: "权重配置请参考 orm_weights.yaml"
+
+  # ======================================================
+  # Domain (数据类型域)
+  # ======================================================
+  domain:
+    name: "数据类型域"
+    strategy: "集中管理数据类型定义，定义可重用的数据类型模板，确保整个模型中相同数据类型的一致性。"
+  domain.name:
+    name: "数据类型域名称"
+    strategy: "生成各种自定义数据类型的名称，这是定义可复用数据类型的基础。"
+  domain.displayName:
+    name: "域展示名称"
+    strategy: "为数据类型提供不同的展示名，直接映射用户的表达。"
+  domain.stdDomain:
+    name: "标准域类型"
+    strategy: "生成使用标准域的指令，映射到预定义的系统类型。"
+  domain.stdSqlType:
+    name: "标准SQL类型"
+    strategy: "生成明确或隐含数据类型和长度的指令，将业务类型映射到底层SQL类型。"
+    scope:
+      - label: 布尔型
+        value: BOOLEAN
+      - label: 小整数
+        value: SMALLINT
+      - label: 大整数
+        value: BIGINT
+      - label: 单精度浮点数
+        value: FLOAT
+      - label: 双精度浮点数
+        value: DOUBLE
+      - label: 高精度浮点数
+        value: NUMERIC
+      - label: 日期型
+        value: DATE
+      - label: 时间型
+        value: TIME
+      - label: 日期时间型
+        value: DATETIME
+      - label: 时间戳
+        value: TIMESTAMP
+      - label: 定长字符
+        value: CHAR
+      - label: 变长字符
+        value: VARCHAR
+      - label: 变长二进制
+        value: VARBINARY
+      - label: JSON类型
+        value: JSON
+      - label: GIS类型
+        value: GEOMETRY
+  domain.precision:
+    name: "精度"
+    strategy: "生成关于数字精度的指令，定义数值类型的总长度。"
+  domain.scale:
+    name: "小数位数"
+    strategy: "生成关于小数位数的指令，数值类型的小数位数。"
+
+  # ======================================================
+  # Entity (实体)
+  # ======================================================
+  entity:
+    name: "实体"
+    strategy: "精细控制每个实体的数据库映射属性和业务规则。实体是ORM模型的核心，每个实体对应数据库中的一个表，通过定义字段、关系、约束等来映射业务对象的结构，支持复杂的数据库映射配置和业务规则设置。"
+  entity.name:
+    name: "实体名称"
+    strategy: "生成多样化实体命名。"
+  entity.displayName:
+    name: "实体展示名称"
+    strategy: "为实体提供不同的展示名。"
+  entity.tableName:
+    name: "数据库表名"
+    strategy: "生成不同数据库表命名风格的指令，映射到物理表名。"
+  entity.useLogicalDelete:
+    name: "逻辑删除"
+    strategy: "生成明确或隐含的'软删除'指令，重要的业务规则，决定数据生命周期。"
+    scope:
+      - label: 启用逻辑删除
+        value: true
+      - label: 禁用逻辑删除
+        value: false
+  entity.comment:
+    name: "实体注释"
+    strategy: "生成不同详细程度的实体注释，补充实体的业务含义。"
+  entity.tagSet:
+    name: "标签集合"
+    strategy: "生成为实体打标签的指令，用于扩展和分类。"
+
+  # --- Entity Filter (实体过滤条件) ---
+  entity.filter:
+    name: "实体过滤条件"
+    strategy: "生成设置过滤条件的指令，实体级别的过滤条件。"
+  entity.filter.name:
+    name: "过滤器名称"
+    strategy: "生成为过滤器命名的指令。"
+  entity.filter.value:
+    name: "过滤器表达式"
+    strategy: "生成设置过滤条件的指令，设定全局查询行为。"
+
+  # --- Entity Compute (行计算字段) ---
+  entity.compute:
+    name: "行计算字段"
+    strategy: "行计算字段定义（虚拟字段），不存储在数据库中，而是通过计算得出。"
+  entity.compute.name:
+    name: "计算字段名称"
+    strategy: "生成行计算字段的名称。"
+  entity.compute.displayName:
+    name: "展示名称"
+    strategy: "生成计算字段的展示名称。"
+  entity.compute.type:
+    name: "数据类型"
+    strategy: "生成指定计算字段返回类型的指令，定义计算结果的类型。"
+  entity.compute.getter:
+    name: "计算表达式"
+    strategy: "生成描述计算逻辑的指令，计算字段的核心逻辑。"
+  entity.compute.setter:
+    name: "设置方法"
+    strategy: "生成'反向设置'计算字段的指令，通常计算字段是只读的。"
+  entity.compute.tagSet:
+    name: "标签集合"
+    strategy: "为计算字段打标签。"
+
+  # --- Entity Column (实体字段) ---
+  entity.column:
+    name: "实体字段"
+    strategy: "精细控制每个字段的数据库映射属性和业务规则，定义实体中的单个属性，映射到数据库表的列。"
+  entity.column.name:
+    name: "字段名称"
+    strategy: "生成多样化字段命名，字段唯一标识。"
+  entity.column.code:
+    name: "字段编码"
+    strategy: "生成指定字段编码的指令。"
+  entity.column.displayName:
+    name: "字段展示名称"
+    strategy: "为字段提供不同的展示名。"
+  entity.column.domain:
+    name: "所属数据域"
+    strategy: "生成引用已定义domain的指令，实现数据类型复用。"
+  entity.column.stdSqlType:
+    name: "标准SQL类型"
+    strategy: "生成指定字段类型的指令，定义字段存储。"
+    scope:
+      - label: 布尔型
+        value: BOOLEAN
+      - label: 小整数
+        value: SMALLINT
+      - label: 大整数
+        value: BIGINT
+      - label: 单精度浮点数
+        value: FLOAT
+      - label: 双精度浮点数
+        value: DOUBLE
+      - label: 高精度浮点数
+        value: NUMERIC
+      - label: 日期型
+        value: DATE
+      - label: 时间型
+        value: TIME
+      - label: 日期时间型
+        value: DATETIME
+      - label: 时间戳
+        value: TIMESTAMP
+      - label: 定长字符
+        value: CHAR
+      - label: 变长字符
+        value: VARCHAR
+      - label: 变长二进制
+        value: VARBINARY
+      - label: JSON类型
+        value: JSON
+      - label: GIS类型
+        value: GEOMETRY
+  entity.column.primary:
+    name: "主键字段"
+    strategy: "生成设置主键的指令，定义实体唯一标识，数据库核心概念。"
+    scope:
+      - label: 是主键
+        value: true
+      - label: 不是主键
+        value: false
+  entity.column.mandatory:
+    name: "必填字段"
+    strategy: "生成各种'必填'指令，核心业务约束。"
+    scope:
+      - label: 是必填
+        value: true
+      - label: 不是必填
+        value: false
+  entity.column.insertable:
+    name: "插入权限"
+    strategy: "生成控制字段是否可插入的指令，决定新建记录时字段的写入权限。"
+    scope:
+      - label: 允许插入
+        value: true
+      - label: 不允许插入
+        value: false
+  entity.column.updatable:
+    name: "更新权限"
+    strategy: "生成控制字段是否可更新的指令，决定修改记录时字段的更新权限。"
+    scope:
+      - label: 允许更新
+        value: true
+      - label: 不允许更新
+        value: false
+  entity.column.defaultValue:
+    name: "默认值"
+    strategy: "生成设置默认值的指令，常见的业务初始化需求。"
+  entity.column.precision:
+    name: "字段精度"
+    strategy: "生成字段级的数值约束指令，适用于数值型字段。"
+  entity.column.scale:
+    name: "字段小数位数"
+    strategy: "生成字段级的数值约束指令，字段的小数位数。"
+  entity.column.comment:
+    name: "字段注释"
+    strategy: "生成字段注释，提升模型可读性的重要部分。"
+  entity.column.tagSet:
+    name: "标签集合"
+    strategy: "为字段打标签，字段级扩展。"
+
+  # --- Entity Relation (实体关系) ---
+  entity.relation:
+    name: "实体关系"
+    strategy: "关系是模型的骨架，实体关系定义，包括一对一、一对多、多对一、多对多关系。"
+  # ToOne (对一关系)
+  entity.relation.toOne.name:
+    name: "对一关系名称"
+    strategy: "生成对一关系的名称，用于在代码中标识和引用该关系。"
+  entity.relation.toOne.displayName:
+    name: "展示名称"
+    strategy: "生成对一关系的展示名称，面向用户的可读性表达。"
+  entity.relation.toOne.queryable:
+    name: "查询权限"
+    strategy: "生成关系是否可被查询的指令。"
+    scope:
+      - label: 可查询
+        value: true
+      - label: 不可查询
+        value: false
+  entity.relation.toOne.cascadeDelete:
+    name: "级联删除"
+    strategy: "生成级联删除指令，核心的数据完整性规则。"
+  entity.relation.toOne.constraint:
+    name: "外键约束名称"
+  entity.relation.toOne.maxBatchLoadSize:
+    name: "批量加载数量"
+    strategy: "生成批量加载数量限制的指令，性能调优。"
+  entity.relation.toOne.comment:
+    name: "注释信息"
+    strategy: "为关系添加注释，补充信息。"
+  entity.relation.toOne.tagSet:
+    name: "标签集合"
+    strategy: "为关系添加标签。"
+  entity.relation.toOne.join.leftProp:
+    name: "左侧字段"
+    strategy: "生成指定本实体外键字段的指令，定义关系如何连接。"
+  entity.relation.toOne.join.rightProp:
+    name: "右侧字段"
+    strategy: "生成指定关联实体主键/关联键的指令，定义关系如何连接。"
+  entity.relation.toOne.join.leftValue:
+    name: "左侧字段值"
+    strategy: "生成使用固定值进行关联的指令。"
+  entity.relation.toOne.join.rightValue:
+    name: "右侧字段值"
+    strategy: "生成使用固定值进行关联的指令。"
+
+  # ToMany (一对多)
+  entity.relation.toMany.name:
+    name: "对多关系名称"
+    strategy: "生成对多关系的名称，用于在代码中标识和引用该关系。"
+  entity.relation.toMany.displayName:
+    name: "展示名称"
+    strategy: "生成对多关系的展示名称，面向用户的可读性表达。"
+  entity.relation.toMany.queryable:
+    name: "查询权限"
+    strategy: "生成关系是否可被查询的指令。"
+    scope:
+      - label: 可查询
+        value: true
+      - label: 不可查询
+        value: false
+  entity.relation.toMany.cascadeDelete:
+    name: "级联删除"
+    strategy: "生成级联删除指令，核心的数据完整性规则。"
+  entity.relation.toMany.maxBatchLoadSize:
+    name: "批量加载数量"
+    strategy: "生成批量加载数量限制的指令。"
+  entity.relation.toMany.maxSize:
+    name: "最大集合大小"
+    strategy: "生成集合最大数量限制的指令。"
+  entity.relation.toMany.comment:
+    name: "注释信息"
+    strategy: "为关系添加注释。"
+  entity.relation.toMany.tagSet:
+    name: "标签集合"
+    strategy: "为关系添加标签。"
+  entity.relation.toMany.join.leftProp:
+    name: "左侧字段"
+    strategy: "生成指定当前实体用于连接的字段名，定义关系连接的左侧。"
+  entity.relation.toMany.join.rightProp:
+    name: "右侧字段"
+    strategy: "生成指定关联实体用于连接的字段名，定义关系连接的右侧。"
+  entity.relation.toMany.join.leftValue:
+    name: "左侧字段值"
+    strategy: "生成使用固定值进行关联的指令。"
+  entity.relation.toMany.join.rightValue:
+    name: "右侧字段值"
+    strategy: "生成使用固定值进行关联的指令。"
+
+  # --- Entity UniqueKey (唯一约束) ---
+  entity.uniqueKey:
+    name: "实体唯一约束"
+    strategy: "唯一约束定义，确保字段值的唯一性。"
+  entity.uniqueKey.name:
+    name: "唯一键名称"
+    strategy: "生成唯一约束名称的指令。"
+  entity.uniqueKey.displayName:
+    name: "展示名称"
+    strategy: "生成唯一约束展示名称的指令。"
+  entity.uniqueKey.columns:
+    name: "包含字段名"
+    strategy: "生成指定一个或多个字段为唯一键的指令。"
+  entity.uniqueKey.constraint:
+    name: "唯一约束名"
+    strategy: "生成指定唯一约束名称的指令。"
+  entity.uniqueKey.comment:
+    name: "注释信息"
+    strategy: "生成注释的指令。"
+  entity.uniqueKey.tagSet:
+    name: "标签集合"
+    strategy: "为唯一键打标签。"
+
+  # --- Entity Index (索引) ---
+  entity.index:
+    name: "实体索引"
+    strategy: "索引定义，用于提高查询性能。"
+  entity.index.name:
+    name: "索引名称"
+    strategy: "生成为索引命名的指令。"
+  entity.index.displayName:
+    name: "展示名称"
+    strategy: "生成为索引展示名称的指令。"
+  entity.index.unique:
+    name: "唯一索引"
+    strategy: "生成创建唯一索引的指令，同时满足索引和唯一约束。"
+    scope:
+      - label: 唯一索引
+        value: true
+      - label: 非唯一索引
+        value: false
+  entity.index.indexType:
+    name: "索引类型"
+    strategy: "生成指定索引类型的指令。"
+    scope:
+      - label: 普通索引
+        value: BTREE
+      - label: 唯一索引
+        value: UNIQUE
+      - label: 主键索引
+        value: PRIMARY
+      - label: 组合索引
+        value: COMPOSITE
+      - label: 全文索引
+        value: FULLTEXT
+  entity.index.comment:
+    name: "索引说明"
+    strategy: "生成注释的指令。"
+  entity.index.tagSet:
+    name: "标签集合"
+    strategy: "为索引打标签。"
+  entity.index.columns.name:
+    name: "索引包含字段"
+    strategy: "生成在哪些字段上创建索引的指令。"
+  entity.index.columns.desc:
+    name: "倒序排列"
+    strategy: "生成创建降序索引的指令，索引的排序方式。"
+
+# 语义矩阵元数据
+semantic_matrix:
+  name: "语义矩阵"
+  description: "解析目标"
+  weight: "权重配置请参考 orm_weights.yaml"
+  intent_strategy:
+    description: "意图策略"
+    weight: "权重配置请参考 orm_weights.yaml"
+    atomic:
+      name: "原子"
+      description: "学习最基础的 '意图-坐标' 映射"
+    composite:
+      name: "复合"
+      description: "学习在一个指令中处理多个同类或不同类的操作"
+    sequence:
+      name: "序列"
+      description: "学习理解有先后顺序的指令，并处理对象间的关系"
+    implicit:
+      name: "隐含"
+      description: "让模型具备'常识'和推理能力，能理解不那么直接的指令"
+
+# 表达矩阵元数据
+expression_matrix:
+  name: "表达矩阵"
+  description: "数据增广"
+  weight: "权重配置请参考 orm_weights.yaml"
+  lexical_layer:
+    name: "词汇层"
+    weight: "权重配置请参考 orm_weights.yaml"
+    synonym_replacement:
+      name: "同义词替换"
+    abbreviation:
+      name: "缩写 / 简写"
+    colloquial_formal:
+      name: "口语化 / 敬语化"
+    industry_jargon:
+      name: "行业黑话 / 术语"
+    tone_particles:
+      name: "语气助词 / 网络用语"
+  syntactic_layer:
+    name: "句法层"
+    weight: "权重配置请参考 orm_weights.yaml"
+    active_passive:
+      name: "主动 ↔ 被动"
+    inversion:
+      name: "倒装"
+    sentence_split_merge:
+      name: "句子拆分/合并"
+    punctuation_rearrange:
+      name: "标点/换行/分号重排"
+    question_imperative:
+      name: "疑问句 ↔ 祈使句"
+  discourse_layer:
+    name: "语篇层"
+    weight: "权重配置请参考 orm_weights.yaml"
+    multi_role:
+      name: "多角色"
+      value: ["产品经理", "DBA", "老同事", "业务人员", "开发人员"]
+    coreference_resolution:
+      name: "代指消解"
+  multilingual_layer:
+    name: "多语言层"
+    weight: "权重配置请参考 orm_weights.yaml"
+    chinese_english_mixed:
+      name: "中英混写"
+    full_chinese:
+      name: "全中文"
+    full_english:
+      name: "全英文"
+    dialect:
+      name: "方言"
+
+# 鲁棒性矩阵元数据
+robustness_matrix:
+  name: "鲁棒性矩阵"
+  description: "提升模型在真实场景下的稳定性和准确性"
+  weight: "权重配置请参考 orm_weights.yaml"
+  noise_layer:
+    name: "噪声层"
+    description: "模拟真实世界中的输入不完美，提升模型容错能力"
+    weight: "权重配置请参考 orm_weights.yaml"
+    character_level:
+      name: "字符/格式层噪声"
+      description: "模拟用户输入时的常见笔误和格式问题"
+      spelling_input_errors:
+        name: "拼写与输入错误"
+        description: "键邻错误、拼音错误、形近字错误、随机增删替换字符"
+        examples:
+          - "把 shiti 表的 primary 设为 true" # shiti->实体
+          - "创建用戶实体" # 繁简混用
+          - "把 user_naem 改成 user_name" # 拼写错误
+      format_symbol_mixed:
+        name: "格式与符号混用"
+        description: "全角半角混用、中英文标点混用、空格换行不规范"
+        examples:
+          - "创建用户表，包含ｉｄ，name和age字段" # 全角半角混用
+          - "把user实体的useLogicalDelete设为true。" # 中英文标点混用
+      case_insensitive:
+        name: "大小写不敏感"
+        description: "随意的大小写使用"
+        examples:
+          - "把 USER 实体的 uselogicaldelete 设为 TRUE"
+          - "创建 Order 实体，包含 orderid 字段"
+    semantic_level:
+      name: "语义/逻辑层噪声"
+      description: "模拟用户思考表达中的逻辑跳跃、冗余和不确定性"
+      self_correction_hesitation:
+        name: "自我修正与犹豫"
+        description: "用户在输入过程中的修改和犹豫"
+        examples:
+          - "把用户表的'名字'改成'姓名'，不对，改成'用户姓名'"
+          - "创建订单实体，嗯...还是叫Order吧"
+      information_redundancy:
+        name: "信息冗余与重复"
+        description: "包含重复或等价信息"
+        examples:
+          - "创建一个用户实体，这个用户实体叫User，用来存用户信息"
+          - "把主键设为主键字段，就是primary为true"
+      irrelevant_interference:
+        name: "无关信息干扰"
+        description: "夹杂无关的闲聊、评论或背景信息"
+        examples:
+          - "我看看用户表里有啥，这个系统响应还挺快。顺便再查下商品表"
+          - "今天天气不错，帮我创建个订单实体吧"
+      imprecise_terminology:
+        name: "术语不精确或混用"
+        description: "使用非标准但可理解的术语"
+        examples:
+          - "在用户表里加个字段" # 实体->表
+          - "把这两个模型关联起来" # 实体->模型
+          - "设置个外键连接到商品" # 关系->外键
+      ambiguous_omission:
+        name: "模糊指令与省略"
+        description: "不完整或需要上下文理解的指令"
+        examples:
+          - "给它加个主键" # 代指上一个实体
+          - "把刚才那个字段删了"
+  adversarial_layer:
+    name: "对抗样本层"
+    description: "故意构造容易导致模型出错的样本，训练模型抗干扰能力"
+    weight: "权重配置请参考 orm_weights.yaml"
+    schema_confusion:
+      name: "结构混淆"
+      description: "在ORM结构定义中制造混淆"
+      field_entity_confusion:
+        name: "字段与实体混淆"
+        description: "故意在字段和实体概念间制造混淆"
+        examples:
+          - "把用户的名称实体设为VARCHAR" # 应该是字段
+          - "创建name实体，类型是字符串" # 应该是字段
+      relation_type_misplacement:
+        name: "关系类型错置"
+        description: "错误的关系类型描述"
+        examples:
+          - "用户对订单是一对一关系" # 实际是一对多
+          - "商品和分类是多对一的一对多关系" # 逻辑混乱
+      constraint_conflict:
+        name: "约束冲突指令"
+        description: "提出相互冲突的约束要求"
+        examples:
+          - "把id设为主键，同时允许为空" # 主键不能为空
+          - "创建唯一索引，允许重复值" # 逻辑矛盾
+      type_mismatch:
+        name: "类型不匹配"
+        description: "数据类型与用途不匹配"
+        examples:
+          - "把用户年龄设为VARCHAR类型"
+          - "用BOOLEAN存储用户姓名"
+    intent_ambiguity:
+      name: "意图歧义"
+      description: "构造具有多重理解可能的指令"
+      unclear_operation_object:
+        name: "操作对象不明"
+        description: "不明确指令作用于哪个对象"
+        examples:
+          - "把name改成username" # 不知道改哪个实体的name
+          - "设置为必填" # 不知道设置哪个字段
+      ambiguous_operation_type:
+        name: "操作类型模糊"
+        description: "不明确要执行什么操作"
+        examples:
+          - "处理一下用户密码" # 加密？验证？修改？
+          - "优化订单查询" # 加索引？改结构？
+      undefined_parameter_range:
+        name: "参数范围不定"
+        description: "参数值的范围或类型不明确"
+        examples:
+          - "把长度设大一点" # 多大？
+          - "调整下精度" # 调到多少？
+    context_dependency:
+      name: "上下文依赖陷阱"
+      description: "需要复杂上下文推理的指令"
+      distant_reference:
+        name: "远距离代指"
+        description: "代指距离很远的对象"
+        examples:
+          - "用户实体... (中间很多其他操作) ...把它的主键改成自增"
+      nested_instructions:
+        name: "多重嵌套指令"
+        description: "在一个指令中嵌套多个子指令"
+        examples:
+          - "在用户实体中添加订单关系，同时在订单实体中添加商品关系，并且确保用户和商品也有间接关系"
+      conditional_branch_confusion:
+        name: "条件分支混乱"
+        description: "复杂的条件逻辑"
+        examples:
+          - "如果是管理员用户就设置权限字段，否则如果是VIP用户就设置等级字段，其他情况创建普通用户字段"
+  negative_samples_layer:
+    name: "负样本层"
+    description: "明确的错误示例，训练模型识别和拒绝不当操作"
+    weight: "权重配置请参考 orm_weights.yaml"
+    syntax_errors:
+      name: "语法错误"
+      description: "在ORM定义语法上明确错误的指令"
+      illegal_field_names:
+        name: "非法字段名"
+        examples:
+          - "创建字段 '123name'" # 数字开头
+          - "添加字段 'user-age'" # 包含连字符
+          - "设置字段 'class'" # 使用保留字
+      unsupported_data_types:
+        name: "不支持的数据类型"
+        examples:
+          - "把字段类型设为 UNKNOWN"
+          - "使用 JAVA_OBJECT 类型"
+      invalid_constraint_combinations:
+        name: "无效的约束组合"
+        examples:
+          - "设置主键为可空"
+          - "创建空的唯一约束"
+    business_logic_errors:
+      name: "业务逻辑错误"
+      description: "业务层面不合理的需求"
+      circular_dependencies:
+        name: "循环依赖"
+        examples:
+          - "用户表引用订单表的主键，同时订单表引用用户表的主键"
+      unreasonable_relationships:
+        name: "不合理的关系"
+        examples:
+          - "设置用户对用户的父子关系为多对多" # 应该是一对多
+      data_integrity_violations:
+        name: "数据完整性破坏"
+        examples:
+          - "删除被引用的实体但不处理外键"
+          - "设置级联删除但保留孤儿记录"
+    impossible_operations:
+      name: "不可能的操作"
+      description: "技术上无法实现的操作"
+      physical_constraint_violations:
+        name: "违反物理约束"
+        examples:
+          - "设置VARCHAR长度为-1"
+          - "创建精度为0的DECIMAL字段"
+      system_limit_conflicts:
+        name: "系统限制冲突"
+        examples:
+          - "在一个表中创建100个主键"
+          - "设置外键指向不存在的表"
+      temporal_logic_errors:
+        name: "时间逻辑错误"
+        examples:
+          - "在删除实体后修改其字段"
+          - "在创建实体前引用其字段"

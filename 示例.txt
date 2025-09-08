@@ -1,0 +1,126 @@
+一、根据模型输入：
+
+1.修改客户表，增加客户等级，类型为数字，并删除与订单表的关联
+2.启用订单表逻辑删除，更新表名为 Customer_O2M_Order
+      
+修改ORM结构（以下为修改后）：
+- entityName: "客户"
+  intents:
+    - intentType: "ADD_ENTITY"
+      targetConceptName: "客户"
+      props:
+        name: "客户"
+
+    - intentType: "ADD_COLUMN"
+      targetConceptName: "客户"
+      props:
+        name: "客户等级"
+        stdSqlType: "INT"
+
+    - intentType: "DELETE_RELATION"
+      targetConceptName: "客户"
+      props:
+        from: "客户"
+        to: "订单"
+
+- entityName: "订单"
+  intents:
+    - intentType: "ADD_ENTITY"
+      targetConceptName: "订单"
+      props:
+        name: "订单"
+
+    - intentType: "UPDATE_ENTITY"
+      targetConceptName: "订单"
+      props:
+        useLogicalDelete: true
+
+    - intentType: "UPDATE_ENTITY"
+      targetConceptName: "订单"
+      props:
+        tableName: "Customer_O2M_Order"
+
+    - intentType: "ADD_COLUMN"
+      targetConceptName: "订单"
+      props:
+        name: "订单金额"
+        stdSqlType: "DECIMAL"
+
+    - intentType: "ADD_COLUMN"
+      targetConceptName: "订单"
+      props:
+        name: "租赁时长"
+        stdSqlType: "INT"
+
+二、合成训练样本格式：
+
+{
+  "instruction": "修改客户表，增加客户等级，类型为数字，并删除与订单表的关联。",
+  "intent": [
+    {
+      "intentType": "ADD_COLUMN",
+      "targetConceptName": "客户",
+      "props": {
+        "name": "客户等级",
+        "stdSqlType": "INT"
+      }
+    },
+    {
+      "intentType": "DELETE_RELATION",
+      "targetConceptName": "客户",
+      "props": {
+        "from": "客户",
+        "to": "订单"
+      }
+    }
+  ]
+}
+
+三、数据增广：
+1. 请在客户实体添加一个整型字段“客户等级”，同时删除其与订单表的关联。
+2. 给客户表加一个叫“客户等级”的数字字段，并取消它和订单之间的关系。
+3. 添加一个名为客户等级的字段到客户实体中（类型为整数），然后断开客户和订单表之间的连接。
+4. 客户表需要一个整型字段“客户等级”，并且要取消与订单表的外键关系。
+5. 删除客户和订单的关系，并新增一个“客户等级”字段，数据类型是 INT。
+
+四、每个增广表达与原始意图绑定成一个训练样本：
+{
+  "instruction": "请在客户实体添加一个整型字段“客户等级”，同时删除其与订单表的关联。",
+  "intent": [...同上 intent JSON...]
+}
+
+五、去重和评估
+1.删除语义重复度过高的表达（比如“加一个字段”和“添加一个字段”意思太接近就去一个）；
+2.剔除语法不通顺、结构混乱的问法；
+
+六、生成对抗样本和负样本：
+{
+  "instruction": "添加字段等级，类型为字符串。",
+  "intent": [
+    {
+      "intentType": "ADD_COLUMN",
+      "targetConceptName": "客户",
+      "props": {
+        "name": "等级",
+        "stdSqlType": "STRING"  // 不规范，应为 VARCHAR
+      }
+    }
+  ],
+  "label": "对抗样本-类型错误"
+}
+
+{
+  "instruction": "加一个字段叫 custGrade。",
+  "intent": [],
+  "label": "负样本-字段别名缺上下文"
+}
+
+
+七、整理和批量生成训练文件
+
+
+八：
+这段时间找了几个从业者聊了一下，得出了以下思路：
+1.目前用提示词可以实现，证明模型是能理解其语义的，这样可以采取cot软标签蒸馏的方式
+2.在我的情形下，场景->意图已经确认，辅以语义、表达、负样本等策略，通过构建提示词应该能生成构造出用户写出的指令，通过微调确认边界。
+3.prompt+LoRA+Adapter 微调 Qwen3-4b 模型，前面加个门控机制通过业务场景(**管理系统等等)得到 Adapter，让模型加载 Adapter 解析用户自然语言

@@ -1,0 +1,348 @@
+--------------------------- 模型输入 ---------------------------
+
+用户问答数据：
+[
+  {
+    "question": "您计划设计的这个'车辆管理系统模型'，其核心业务目标或主要用户场景是什么？它期望解决哪些关键问题或满足哪些核心需求？",
+    "user_answer": "主要是用于公司内部车辆的管理，包括车辆的调度、维修记录和违章处理。目标是提高车辆使用效率，减少管理成本。"
+  },
+  {
+    "question": "基于这些核心目标，除了您已提到的'客户'实体，这个'车辆管理系统模型'还需要管理和追踪哪些最核心的业务对象或概念？（这些通常会成为系统的核心实体/表，例如 '车辆' 本身，或者与车辆相关的 '订单'、'维修记录' 等）",
+    "user_answer": "除了客户，还需要车辆、维修记录和订单。可能还需要驾驶员信息，不过这个要看具体需求。"
+  },
+  {
+    "question": "对于您计划添加的'客户'实体，它在车辆管理系统中具体代表什么核心概念或业务对象，并预计承担哪些核心职责？",
+    "user_answer": "客户实体代表租赁或使用我们车辆的个人或公司。主要职责是记录客户的基本信息、租赁历史和联系方式。"
+  },
+  {
+    "question": "这个'客户'实体，为了完整地发挥其作用，最需要和哪些其他核心实体（例如您可能考虑的 '车辆'、'订单' 等）建立业务关联？您初步设想这些关联是什么类型的（比如一个客户可以有多辆车，或者一个客户可以有多个订单），以及这些关联背后的业务逻辑是什么？",
+    "user_answer": "客户应该和订单关联，一个客户可以有多个订单。可能还需要和车辆关联，记录客户租赁过的车辆。业务逻辑是为了跟踪客户的使用情况和历史记录。"
+  },
+  {
+    "question": "关于您提到的对'字段A'和'字段B'进行统计求和，这个统计结果（以及可能的字段A和字段B本身）您认为应该由哪个核心业务实体来承载或管理？是'客户'实体，还是与'车辆'、'订单'或其他业务概念相关的实体？",
+    "user_answer": "这个统计应该由订单实体来管理，因为字段A和B是和订单相关的数据，比如订单金额和租赁时长。"
+  }
+]
+
+
+明确指令：
+1.修改客户表，增加客户等级，类型为数字，并删除与订单表的关联
+2.启用订单表逻辑删除，更新表名为 Customer_O2M_Order
+
+--------------------------- 模型输入 ---------------------------
+
+
+
+--------------------------- 模型输出 ---------------------------
+
+原子意图与需求对齐示例数据：
+{
+  "ormModel": {
+    "name": "车辆管理系统模型",
+    "description": "用于公司内部车辆的管理，核心是实现车辆调度、维修记录和违章处理的数字化，旨在提高车辆使用效率并降低整体管理成本。"
+  },
+  "modelStructure": [
+    {
+      "entityName": "车辆",
+      "intents": [
+        {
+          "intentType": "ADD_ENTITY",
+          "targetConceptName": "车辆",
+          "props": {
+            "name": "车辆"
+          },
+          "sourceText": "车辆"
+        }
+      ]
+    },
+    {
+      "entityName": "维修记录",
+      "intents": [
+        {
+          "intentType": "ADD_ENTITY",
+          "targetConceptName": "维修记录",
+          "props": {
+            "name": "维修记录"
+          },
+          "sourceText": "维修记录"
+        }
+      ]
+    },
+    {
+      "entityName": "违章处理",
+      "intents": [
+        {
+          "intentType": "ADD_ENTITY",
+          "targetConceptName": "违章处理",
+          "props": {
+            "name": "违章处理"
+          },
+          "sourceText": "违章处理"
+        }
+      ]
+    },
+    {
+      "entityName": "客户",
+      "intents": [
+        {
+          "intentType": "ADD_ENTITY",
+          "targetConceptName": "客户",
+          "props": {
+            "name": "客户"
+          },
+          "sourceText": "客户"
+        },
+        {
+          "intentType": "ADD_COLUMN",
+          "targetConceptName": "客户",
+          "props": {
+            "name": "联系方式"
+          },
+          "sourceText": "主要职责是记录客户的基本信息、租赁历史和联系方式。"
+        },
+        {
+          "intentType": "ADD_COLUMN",
+          "targetConceptName": "客户",
+          "props": {
+            "name": "客户类型"
+          },
+          "sourceText": "个人或公司"
+        },
+        {
+          "intentType": "ADD_COLUMN",
+          "targetConceptName": "客户",
+          "props": {
+            "name": "客户等级"
+            "stdSqlType": "数字"
+          },
+          "sourceText": "类型为数字"
+        },
+        {
+          "intentType": "ADD_RELATION",
+          "targetConceptName": "客户",
+          "props": {
+            "from": "客户",
+            "to": "订单",
+            "type": "o2m"
+          },
+          "sourceText": "一个客户可以有多个订单"
+        },
+        {
+          "intentType": "ADD_RELATION",
+          "targetConceptName": "客户",
+          "props": {
+            "from": "客户",
+            "to": "车辆",
+            "type": "m2m"
+          },
+          "sourceText": "和车辆关联，记录客户租赁过的车辆"
+        },
+        {
+          "intentType": "DELETE_RELATION",
+          "targetConceptName": "客户",
+          "props": {
+            "from": "客户",
+            "to": "订单",
+          },
+          "sourceText": "并删除与订单表的关联"
+        },
+      ]
+    },
+    {
+      "entityName": "订单",
+      "intents": [
+        {
+          "intentType": "ADD_ENTITY",
+          "targetConceptName": "订单",
+          "props": {
+            "name": "订单"
+          },
+          "sourceText": "订单"
+        },
+        {
+          "intentType": "UPDATE_ENTITY",
+          "targetConceptName": "订单",
+          "props": {
+            "useLogicalDelete": "启用"
+          },
+          "sourceText": "启用订单表逻辑删除"
+        },
+        {
+          "intentType": "UPDATE_ENTITY",
+          "targetConceptName": "订单",
+          "props": {
+            "tableName": "Customer_O2M_Order"
+          },
+          "sourceText": "更新表名为Customer_O2M_Order"
+        },
+        {
+          "intentType": "ADD_COLUMN",
+          "targetConceptName": "订单",
+          "props": {
+            "name": "订单金额"
+          },
+          "sourceText": "比如订单金额和租赁时长"
+        },
+        {
+          "intentType": "ADD_COLUMN",
+          "targetConceptName": "订单",
+          "props": {
+            "name": "租赁时长"
+          },
+          "sourceText": "比如订单金额和租赁时长"
+        },
+        {
+          "intentType": "ADD_COMPUTE",
+          "targetConceptName": "订单",
+          "props": {
+            "name": "订单统计",
+            "logic": "统计求和",
+            "fields": [
+              "订单金额",
+              "租赁时长"
+            ]
+          },
+          "sourceText": "这个统计应该由订单实体来管理...比如订单金额和租赁时长"
+        }
+      ]
+    },
+    {
+      "entityName": "驾驶员",
+      "intents": [
+        {
+          "intentType": "ADD_ENTITY",
+          "targetConceptName": "驾驶员",
+          "props": {
+            "name": "驾驶员"
+          },
+          "sourceText": "驾驶员信息"
+        }
+      ]
+    },
+    {
+      "entityName": "租赁历史",
+      "intents": [
+        {
+          "intentType": "ADD_ENTITY",
+          "targetConceptName": "租赁历史",
+          "props": {
+            "name": "租赁历史"
+          },
+          "sourceText": "客户租赁历史"
+        }
+      ]
+    }
+  ]
+}
+
+--------------------------- 模型输出 ---------------------------
+
+
+--------------------------- 领域坐标系 ---------------------------
+合法意图 = {QUERY|ADD|UPDATE|DELETE} ✖ 领域坐标系
+领域坐标系：
+{
+  "orm": { // ORM 根对象，表示一个对象关系模型定义
+    "displayName": "string", // 模型的展示名称
+    "description": "string", // 模型的描述信息
+    "domain": { // 数据类型域定义
+      "name": "string", // 域名称（唯一标识）
+      "displayName": "string", // 域的展示名称
+      "stdDomain": "string", // 标准域类型（如 file、json 等）
+      "stdSqlType": "string", // 标准 SQL 类型（如 VARCHAR、INT 等）
+      "precision": "number", // 精度（适用于小数或定长类型）
+      "scale": "number" // 小数位数（仅对小数字段适用）
+    },
+    "entity": { // 实体定义
+      "displayName": "string", // 实体的展示名称
+      "useLogicalDelete": "boolean", // 是否使用逻辑删除
+      "tableName": "string", // 对应数据库中的表名
+      "tagSet": "string", // 标签集合，用于扩展用途
+      "name": "string", // 实体的唯一标识名
+      "comment": "string", // 实体的注释信息
+      "filter":{ // 实体级别的默认过滤条件
+        "name": "string", // 过滤器名称
+        "value": "expression" // 过滤器表达式
+      },
+      "column": { // 字段定义
+        "name": "string", // 字段名称（唯一标识）
+        "code": "string", // 字段编码（可能用于代码生成）
+        "displayName": "string", // 字段的展示名称
+        "insertable": "boolean", // 是否允许插入时赋值
+        "updatable": "boolean", // 是否允许更新时赋值
+        "domain": "string", // 所属数据域
+        "stdSqlType": "string", // 对应的标准 SQL 数据类型
+        "scale": "number", // 小数位数
+        "precision": "number", // 字段精度（适用于数值型字段）
+        "primary": "boolean", // 是否为主键字段
+        "defaultValue": "string", // 默认值
+        "comment": "string", // 字段注释
+        "tagSet": "string", // 标签集合
+        "mandatory": "boolean" // 是否为必填字段（非空）
+      },
+      "compute": { // 计算字段定义（虚拟字段）
+        "name": "string", // 字段名称
+        "displayName": "string", // 展示名称
+        "type": "string", // 数据类型
+        "tagSet": "string", // 标签集合
+        "getter": "string", // 获取计算值的方法或表达式
+        "setter": "string" // 设置计算值的方法（通常为空）
+      },
+      "relation": { // 实体关系定义
+        "toOne": { // 多对一关系定义
+          "name": "string", // 关系名称
+          "displayName": "string", // 展示名称
+          "maxBatchLoadSize": "number", // 批量加载最大数量
+          "queryable": "boolean", // 是否可被查询
+          "tagSet": "string", // 标签集合
+          "constraint": "string", // 外键约束名称
+          "cascadeDelete": "boolean", // 删除时是否级联删除目标对象
+          "comment": "string", // 注释信息
+          "join": { // 连接字段映射
+            "leftProp": "string", // 当前实体的字段名
+            "leftValue": "any", // 当前实体字段的值
+            "rightProp": "string", // 目标实体的字段名
+            "rightValue": "any" // 目标实体字段的值
+          }
+        },
+        "toMany": { // 一对多关系定义
+          "name": "string", // 关系名称
+          "displayName": "string", // 展示名称
+          "maxBatchLoadSize": "number", // 批量加载最大数量
+          "maxSize": "number", // 最大集合大小
+          "queryable": "boolean", // 是否支持查询
+          "tagSet": "string", // 标签集合
+          "cascadeDelete": "boolean", // 删除时是否级联目标集合
+          "comment": "string", // 注释信息
+          "join": { // 连接字段映射
+            "leftProp": "string", // 当前实体的字段名
+            "leftValue": "any", // 当前实体字段的值
+            "rightProp": "string", // 目标实体的字段名
+            "rightValue": "any" // 目标实体字段的值
+          }
+        }
+      },
+      "uniqueKey": { // 唯一约束定义
+        "name": "string", // 唯一键名称
+        "displayName": "string", // 展示名称
+        "columns": "string", // 包含字段名（多个字段用逗号分隔）
+        "constraint": "string", // 数据库中的唯一约束名
+        "tagSet": "string", // 标签集合
+        "comment": "string" // 注释信息
+      },
+      "index": { // 索引定义
+        "name": "string", // 索引名称
+        "displayName": "string", // 展示名称
+        "unique": "boolean", // 是否为唯一索引
+        "indexType": "string", // 索引类型（如 BTREE、HASH 等）
+        "comment": "string", // 索引说明
+        "tagSet": "string", // 标签集合
+        "columns": { // 索引包含字段
+          "name": "string", // 字段名称
+          "desc": "boolean" // 是否倒序排列（true 为倒序）
+        }
+      }
+    }
+  }
+}
+--------------------------- 领域坐标系 ---------------------------
